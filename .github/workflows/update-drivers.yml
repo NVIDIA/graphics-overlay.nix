@@ -17,10 +17,11 @@ jobs:
   update:
     runs-on: ubuntu-latest
     timeout-minutes: 120
-    # The PR is pushed and opened with a GitHub App token (see "Open pull
-    # request"), so GITHUB_TOKEN only needs to read the repository.
+    # The PR is pushed and opened with GITHUB_TOKEN (see "Open pull
+    # request"), so it needs to push the branch and create the PR.
     permissions:
-      contents: read
+      contents: write
+      pull-requests: write
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -114,24 +115,12 @@ jobs:
           done
 
       # PRs opened with GITHUB_TOKEN do not trigger other workflows, so CI
-      # would never run on them. A GitHub App installation token does.
-      # Minted just before use since it expires after an hour and the
-      # builds above can take longer than that.
-      - name: Generate GitHub App token
-        if: steps.update.outputs.changed == 'true'
-        id: app-token
-        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
-        with:
-          client-id: ${{ vars.APP_CLIENT_ID }}
-          private-key: ${{ secrets.APP_PRIVATE_KEY }}
-          permission-contents: write
-          permission-pull-requests: write
-
+      # does not run on them by itself. Close and reopen the PR to start
+      # it.
       - name: Open pull request
         if: steps.update.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
-          token: ${{ steps.app-token.outputs.token }}
           commit-message: |
             default.nix: bump NVIDIA driver versions
 
