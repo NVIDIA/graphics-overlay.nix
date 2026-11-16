@@ -2,6 +2,12 @@
 
 [[https://develop.spacemacs.org][file:https://cdn.rawgit.com/syl20bnr/spacemacs/442d025779da2f62fc86c2082703697714db6514/assets/spacemacs-badge.svg]]
 
+** Disclaimer
+
+This repository is intended for purely graphics and Linux desktop related
+purposes. It does not cover any compute related components such as CUDA toolkit,
+etc.
+
 ** Acknowledgements
 
 The source in this repository is derived from the [[https://github.com/NixOS/nixpkgs/tree/8e3eab28d876d770f7103c26f3d995588202862c/pkgs/os-specific/linux/nvidia-x11][upstream NVIDIA driver
@@ -34,7 +40,7 @@ In ~/etc/nixos/configuration.nix~:
   let
     kernelPackages = pkgs.linuxPackages; # Or preferred linux kernel package
 
-    nvidiaPkgs = import (builtins.fetchTarball https://github.com/NVIDIA/nixpkgs-nvidia/archive/trunk.tar.gz) {
+    nvidiaPkgs = import (builtins.fetchTarball https://github.com/NVIDIA/graphics-overlay.nix/archive/trunk.tar.gz) {
       inherit lib stdenv pkgsi686Linux;
       callPackage = pkgs.callPackage;
       kernel = kernelPackages.kernel;
